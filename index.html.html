@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pencatat Pembayaran Sampah 🌱</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.10);
+            padding: 32px 18px 24px 18px;
+        }
+        h2 {
+            color: #009688;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #1976d2;
+            margin-bottom: 24px;
+            font-weight: bold;
+        }
+        label {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+            border: 1px solid #b2dfdb;
+            border-radius: 6px;
+            background: #f1f8e9;
+        }
+        button, .btn {
+            background: #009688;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+            margin-right: 4px;
+            transition: background 0.2s;
+        }
+        button:hover, .btn:hover {
+            background: #00796b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+        th, td {
+            border: 1px solid #b2dfdb;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #b3e5fc;
+            color: #00796b;
+        }
+        tr:nth-child(even) {
+            background: #e0f2f1;
+        }
+        .footer {
+            text-align: center;
+            color: #388e3c;
+            margin-top: 32px;
+            font-weight: bold;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .error {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .success {
+            color: #388e3c;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .actions button {
+            padding: 4px 10px;
+            font-size: 13px;
+            margin: 0 2px;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 10px 2vw; }
+            table, thead, tbody, th, td, tr { font-size: 13px; }
+            button, .btn { font-size: 13px; padding: 8px 10px; }
+        }
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .tools > * {
+            flex: 1 1 120px;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🌱 Pencatat Pembayaran Sampah 🌱</h2>
+        <div class="subtitle">Bersama kita jaga kebersihan lingkungan dari sampah!</div>
+        <form id="paymentForm" autocomplete="off">
+            <div id="errorMsg" class="error" style="display:none;"></div>
+            <div id="successMsg" class="success" style="display:none;"></div>
+            <label for="nama">Nama:</label>
+            <input type="text" id="nama" maxlength="50" required>
+            <label for="alamat">Alamat:</label>
+            <input type="text" id="alamat" maxlength="100" required>
+            <label for="bulan">Bulan Pembayaran:</label>
+            <select id="bulan" required>
+                <option value="">-- Pilih Bulan --</option>
+                <option value="Januari">Januari</option>
+                <option value="Februari">Februari</option>
+                <option value="Maret">Maret</option>
+                <option value="April">April</option>
+                <option value="Mei">Mei</option>
+                <option value="Juni">Juni</option>
+                <option value="Juli">Juli</option>
+                <option value="Agustus">Agustus</option>
+                <option value="September">September</option>
+                <option value="Oktober">Oktober</option>
+                <option value="November">November</option>
+                <option value="Desember">Desember</option>
+            </select>
+            <label for="jumlah">Jumlah Pembayaran (Rp):</label>
+            <input type="number" id="jumlah" min="100000" step="0.01" required placeholder="Minimal 100000">
+            <button type="submit" id="submitBtn">Tambah Pembayaran</button>
+            <button type="button" id="cancelEditBtn" style="display:none;background:#d32f2f;">Batal Edit</button>
+        </form>
+
+        <div class="tools">
+            <input type="text" id="searchInput" placeholder="Cari nama/alamat...">
+            <select id="filterBulan">
+                <option value="">Semua Bulan</option>
+                <option value="Januari">Januari</option>
+                <option value="Februari">Februari</option>
+                <option value="Maret">Maret</option>
+                <option value="April">April</option>
+                <option value="Mei">Mei</option>
+                <option value="Juni">Juni</option>
+                <option value="Juli">Juli</option>
+                <option value="Agustus">Agustus</option>
+                <option value="September">September</option>
+                <option value="Oktober">Oktober</option>
+                <option value="November">November</option>
+                <option value="Desember">Desember</option>
+            </select>
+            <button type="button" class="btn" onclick="exportCSV()">Ekspor CSV</button>
+            <button type="button" class="btn" onclick="window.print()">Cetak</button>
+        </div>
+
+        <table id="paymentsTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>Bulan</th>
+                    <th>Jumlah (Rp)</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" style="text-align:right;">Total</th>
+                    <th id="totalPembayaran" style="color:#009688;font-weight:bold;">Rp0,00</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="footer">
+            Terima kasih telah peduli terhadap kebersihan lingkungan! <span class="emoji">🌏</span>
+        </div>
+    </div>
+    <script>
+        let payments = [];
+        let editIndex = null;
+
+      
+        if (localStorage.getItem('pembayaranSampah')) {
+            payments = JSON.parse(localStorage.getItem('pembayaranSampah'));
+        }
+
+        const form = document.getElementById('paymentForm');
+        const tableBody = document.querySelector('#paymentsTable tbody');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const searchInput = document.getElementById('searchInput');
+        const filterBulan = document.getElementById('filterBulan');
+        const totalPembayaran = document.getElementById('totalPembayaran');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function saveToLocal() {
+            localStorage.setItem('pembayaranSampah', JSON.stringify(payments));
+        }
+
+        function showSuccess(msg) {
+            successMsg.textContent = msg;
+            successMsg.style.display = "block";
+            setTimeout(() => { successMsg.style.display = "none"; }, 2000);
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.style.display = "block";
+            setTimeout(() => { errorMsg.style.display = "none"; }, 2500);
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            errorMsg.style.display = "none";
+            successMsg.style.display = "none";
+            const nama = document.getElementById('nama').value.trim();
+            const alamat = document.getElementById('alamat').value.trim();
+            const bulan = document.getElementById('bulan').value;
+            const jumlah = parseFloat(document.getElementById('jumlah').value);
+
+           
+            if (nama === "" || alamat === "" || bulan === "" || isNaN(jumlah)) {
+                showError("Semua data harus diisi!");
+                return;
+            }
+            if (nama.replace(/\s/g, '').length === 0 || alamat.replace(/\s/g, '').length === 0) {
+                showError("Nama dan alamat tidak boleh hanya spasi!");
+                return;
+            }
+            if (jumlah < 100000) {
+                showError("Jumlah pembayaran minimal Rp100.000,00");
+                return;
+            }
+
+            if (editIndex !== null) {
+                payments[editIndex] = { nama, alamat, bulan, jumlah };
+                showSuccess("Data berhasil diubah!");
+                editIndex = null;
+                submitBtn.textContent = "Tambah Pembayaran";
+                cancelEditBtn.style.display = "none";
+            } else {
+                payments.push({ nama, alamat, bulan, jumlah });
+                showSuccess("Data berhasil ditambahkan!");
+            }
+            saveToLocal();
+            renderTable();
+            form.reset();
+        });
+
+        cancelEditBtn.addEventListener('click', function() {
+            editIndex = null;
+            form.reset();
+            submitBtn.textContent = "Tambah Pembayaran";
+            cancelEditBtn.style.display = "none";
+        });
+
+        function renderTable() {
+            let filtered = payments;
+            const search = searchInput.value.trim().toLowerCase();
+            const bulanFilter = filterBulan.value;
+
+            if (search) {
+                filtered = filtered.filter(p =>
+                    p.nama.toLowerCase().includes(search) ||
+                    p.alamat.toLowerCase().includes(search)
+                );
+            }
+            if (bulanFilter) {
+                filtered = filtered.filter(p => p.bulan === bulanFilter);
+            }
+
+            tableBody.innerHTML = '';
+            let total = 0;
+            filtered.forEach((p, i) => {
+                total += p.jumlah;
+                const row = `<tr>
+                    <td>${i + 1}</td>
+                    <td>${p.nama}</td>
+                    <td>${p.alamat}</td>
+                    <td>${p.bulan}</td>
+                    <td style="color:#009688;font-weight:bold;">${p.jumlah.toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                    <td class="actions">
+                        <button onclick="editData(${payments.indexOf(p)})" style="background:#1976d2;">Edit</button>
+                        <button onclick="deleteData(${payments.indexOf(p)})" style="background:#d32f2f;">Hapus</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+            totalPembayaran.textContent = "Rp" + total.toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2});
+        }
+
+        window.editData = function(index) {
+            const p = payments[index];
+            document.getElementById('nama').value = p.nama;
+            document.getElementById('alamat').value = p.alamat;
+            document.getElementById('bulan').value = p.bulan;
+            document.getElementById('jumlah').value = p.jumlah;
+            editIndex = index;
+            submitBtn.textContent = "Simpan Perubahan";
+            cancelEditBtn.style.display = "inline-block";
+            window.scrollTo({top:0, behavior:'smooth'});
+        };
+
+        window.deleteData = function(index) {
+            if (confirm("Yakin ingin menghapus data ini?")) {
+                payments.splice(index, 1);
+                saveToLocal();
+                renderTable();
+                showSuccess("Data berhasil dihapus!");
+            }
+        };
+
+        searchInput.addEventListener('input', renderTable);
+        filterBulan.addEventListener('change', renderTable);
+
+        function exportCSV() {
+            let csv = "No,Nama,Alamat,Bulan,Jumlah (Rp)\n";
+            let filtered = payments;
+            const search = searchInput.value.trim().toLowerCase();
+            const bulanFilter = filterBulan.value;
+            if (search) {
+                filtered = filtered.filter(p =>
+                    p.nama.toLowerCase().includes(search) ||
+                    p.alamat.toLowerCase().includes(search)
+                );
+            }
+            if (bulanFilter) {
+                filtered = filtered.filter(p => p.bulan === bulanFilter);
+            }
+            filtered.forEach((p, i) => {
+                csv += ${i+1},"${p.nama}","${p.alamat}","${p.bulan}",${p.jumlah}\n;
+            });
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pembayaran_sampah.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        window.exportCSV = exportCSV;
+
+       
+        renderTable();
+    </script>
+</body>
+</html>
